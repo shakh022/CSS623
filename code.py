@@ -1,3 +1,4 @@
+# Importing necessary modules
 from tkinter import *
 from tkinter import filedialog
 from Crypto.Cipher import AES
@@ -7,14 +8,42 @@ import os
 
 # Function to pad the data to be encrypted
 def pad(s):
+    """
+    Pads the input data to match the block size for encryption.
+
+    Args:
+    - s: Input data to be padded
+
+    Returns:
+    - Padded data to match the block size for encryption
+    """
     return s + b"\0" * (AES.block_size - len(s) % AES.block_size)
 
 # Function to derive a key from a password using PBKDF2
 def derive_key(password, salt=b'salt_', key_length=32, iterations=100_000):
+    """
+    Derives a key from a password using PBKDF2.
+
+    Args:
+    - password: Password used to derive the key
+    - salt: Optional salt value (default is 'salt_')
+    - key_length: Length of the key in bytes (default is 32)
+    - iterations: Number of iterations (default is 100,000)
+
+    Returns:
+    - Derived key using PBKDF2
+    """
     return PBKDF2(password, salt, dkLen=key_length, count=iterations)
 
 # Function to encrypt a file
 def encrypt_file(file_name, key):
+    """
+    Encrypts a file using AES encryption.
+
+    Args:
+    - file_name: Name of the file to be encrypted
+    - key: Key used for encryption
+    """
     with open(file_name, 'rb') as f:
         plaintext = f.read()
     
@@ -26,6 +55,13 @@ def encrypt_file(file_name, key):
 
 # Function to decrypt a file
 def decrypt_file(file_name, key):
+    """
+    Decrypts a file previously encrypted using AES encryption.
+
+    Args:
+    - file_name: Name of the file to be decrypted
+    - key: Key used for decryption
+    """
     with open(file_name, 'rb') as f:
         ciphertext = f.read()
     
@@ -35,12 +71,20 @@ def decrypt_file(file_name, key):
     with open(file_name[:-4], 'wb') as f:
         f.write(decrypted_text)
 
+# Function to open a file dialog for user file selection
 def openFile():
+    """
+    Opens a file dialog for selecting a file.
+    """
     global file
     file = filedialog.askopenfilename(initialdir="/", title="Select file")
     print("Selected File:", file)
 
+# Function to initiate file encryption
 def encrypt():
+    """
+    Initiates the file encryption process.
+    """
     password = code.get().encode('utf-8')
     key = derive_key(password)
     if not file or not key:
@@ -50,7 +94,11 @@ def encrypt():
     encrypt_file(file, key)
     print("File encrypted successfully.")
 
+# Function to initiate file decryption
 def decrypt():
+    """
+    Initiates the file decryption process.
+    """
     password = code.get().encode('utf-8')
     key = derive_key(password)
     if not file or not key:
@@ -60,7 +108,11 @@ def decrypt():
     decrypt_file(file, key)
     print("File decrypted successfully.")
 
+# Function to create the main user interface screen
 def main_screen():
+    """
+    Creates the main user interface screen using tkinter.
+    """
     global root
     global code
     global file
@@ -81,4 +133,6 @@ def main_screen():
 
     root.mainloop()
 
-main_screen()
+# Starting point of the program
+if __name__ == "__main__":
+    main_screen()
